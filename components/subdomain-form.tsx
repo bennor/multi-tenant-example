@@ -91,7 +91,7 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
           {/* Icon display and picker button */}
           <div className="flex items-center gap-2">
             <Card className="flex-1 flex items-center justify-between p-2 border border-input">
-              <div className="min-w-[40px] min-h-[40px] flex items-center pl-1.5">
+              <div className="min-w-[40px] min-h-[40px] flex items-center pl-1.5 select-none">
                 {icon ? (
                   <span className="text-3xl">{icon}</span>
                 ) : (
