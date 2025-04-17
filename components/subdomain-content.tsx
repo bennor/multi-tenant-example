@@ -1,3 +1,5 @@
+"use cache"
+
 import Link from "next/link"
 
 // Get the domain from environment variable or use a default

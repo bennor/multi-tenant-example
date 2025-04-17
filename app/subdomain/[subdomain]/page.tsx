@@ -1,5 +1,3 @@
-"use cache"
-
 import { getSubdomainData } from "@/actions/subdomain"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -38,7 +36,7 @@ export default async function SubdomainPage({
   const { subdomain } = params
   const data = await getSubdomainData(subdomain)
 
-  // This check is outside the cached content
+  // This check should run on every request, not be cached
   if (!data) {
     notFound()
   }
