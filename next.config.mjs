@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // Enable Dynamic IO for improved performance
-    dynamicIO: true,
+    // Enable useCache feature without requiring dynamicIO
+    useCache: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
