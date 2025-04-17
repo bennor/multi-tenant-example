@@ -80,17 +80,17 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="emoji">Emoji</Label>
+        <Label htmlFor="emoji">Icon</Label>
         <Input
           id="emoji"
           ref={emojiInputRef}
-          placeholder="Enter an emoji"
+          placeholder="Enter an emoji or special character"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
           required
           maxLength={2}
         />
-        <p className="text-xs text-gray-500">Enter a single emoji character</p>
+        <p className="text-xs text-gray-500">Enter a single emoji or special character (e.g., ▲, ★, ♥)</p>
       </div>
 
       {error && <div className="text-sm text-red-500">{error}</div>}

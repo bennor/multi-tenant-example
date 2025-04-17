@@ -7,24 +7,22 @@ type SubdomainData = {
   createdAt: number
 }
 
-// Regex to check if a string contains only emoji characters
-function isEmoji(str: string) {
-  // This regex pattern matches most common emoji characters
-  const emojiRegex =
-    /^(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component})+$/u
-  return emojiRegex.test(str) && str.length === 2
+// Updated function to check if a string contains a valid icon (emoji or special character)
+function isValidIcon(str: string) {
+  // Allow any single character or emoji (which can be 2 characters in JS)
+  return str.length <= 2
 }
 
 export async function createSubdomain(subdomain: string, emoji: string) {
   try {
     // Validate inputs
     if (!subdomain || !emoji) {
-      return { success: false, error: "Subdomain and emoji are required" }
+      return { success: false, error: "Subdomain and icon are required" }
     }
 
-    // Validate emoji
-    if (!isEmoji(emoji)) {
-      return { success: false, error: "Please enter a valid emoji character" }
+    // Validate icon
+    if (!isValidIcon(emoji)) {
+      return { success: false, error: "Please enter a valid emoji or special character" }
     }
 
     // Sanitize subdomain (only allow alphanumeric and hyphens)
@@ -60,7 +58,8 @@ export async function createSubdomain(subdomain: string, emoji: string) {
 
 export async function getSubdomainData(subdomain: string) {
   try {
-    const data = await kv.get<SubdomainData>(`subdomain:${subdomain}`)
+    const sanitizedSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, "")
+    const data = await kv.get<SubdomainData>(`subdomain:${sanitizedSubdomain}`)
     return data
   } catch (error) {
     console.error("Error getting subdomain data:", error)
