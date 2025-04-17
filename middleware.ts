@@ -11,58 +11,40 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check if we're in a preview environment (Vercel preview deployment)
-  const isPreview = host.includes("vercel.app") || host.includes(".preview.app")
-
-  // Extract hostname without port
+  // Check if we're on a subdomain
   const hostname = host.split(":")[0]
   const rootDomain = domain.split(":")[0]
 
-  // Handle preview environments differently
-  if (isPreview) {
-    // In preview, subdomains are indicated with a pattern like: tenant---branch-name.vercel.app
-    // or tenant.project-name.preview.app
-    const hostnameParts = hostname.split(".")
-    const previewParts = hostnameParts[0].split("---")
+  // Handle preview deployment URLs (tenant---branch-name.vercel.app)
+  const isPreviewDeployment = hostname.includes("---") && hostname.endsWith(".vercel.app")
 
-    // If there's a tenant prefix in the preview URL
-    if (previewParts.length > 1) {
-      const subdomain = previewParts[0]
+  let subdomain: string | null = null
 
-      // Block access to admin page from subdomains
-      if (pathname.startsWith("/admin")) {
-        return NextResponse.redirect(new URL("/", request.url))
-      }
-
-      // For the root path on a subdomain, rewrite to the subdomain page
-      if (pathname === "/") {
-        return NextResponse.rewrite(new URL(`/subdomain/${subdomain}`, request.url))
-      }
-
-      // For all other paths on a subdomain, just continue
-      return NextResponse.next()
+  if (isPreviewDeployment) {
+    // Extract subdomain from preview URL (format: tenant---branch-name.vercel.app)
+    const parts = hostname.split("---")
+    if (parts.length > 0) {
+      subdomain = parts[0]
     }
+  } else {
+    // Regular subdomain detection
+    const isSubdomain =
+      hostname !== rootDomain &&
+      hostname !== `www.${rootDomain}` &&
+      (hostname.endsWith(`.${rootDomain}`) || hostname.includes(".localhost"))
 
-    // If no tenant prefix, treat as the root domain
-    return NextResponse.next()
+    if (isSubdomain) {
+      // Extract subdomain name
+      if (hostname.includes(".localhost")) {
+        subdomain = hostname.split(".")[0]
+      } else {
+        subdomain = hostname.replace(`.${rootDomain}`, "")
+      }
+    }
   }
 
-  // Standard environment handling (production or local)
-  const isSubdomain =
-    hostname !== rootDomain &&
-    hostname !== `www.${rootDomain}` &&
-    (hostname.endsWith(`.${rootDomain}`) || hostname.includes(".localhost"))
-
-  // Handle subdomain requests
-  if (isSubdomain) {
-    // Extract subdomain name
-    let subdomain
-    if (hostname.includes(".localhost")) {
-      subdomain = hostname.split(".")[0]
-    } else {
-      subdomain = hostname.replace(`.${rootDomain}`, "")
-    }
-
+  // If we have a subdomain (either from regular URL or preview deployment)
+  if (subdomain) {
     // Block access to admin page from subdomains
     if (pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/", request.url))
@@ -72,9 +54,6 @@ export async function middleware(request: NextRequest) {
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/subdomain/${subdomain}`, request.url))
     }
-
-    // For all other paths on a subdomain, just continue
-    return NextResponse.next()
   }
 
   // On the root domain, allow normal access
