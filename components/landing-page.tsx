@@ -1,10 +1,16 @@
+"use client"
+
 import { SubdomainForm } from "./subdomain-form"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
 
 export function LandingPage() {
+  const searchParams = useSearchParams()
+  const suggestedSubdomain = searchParams.get("subdomain")
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4 relative">
       {/* Admin link */}
@@ -21,7 +27,7 @@ export function LandingPage() {
         </div>
 
         <div className="mt-8 bg-white shadow-md rounded-lg p-6">
-          <SubdomainForm />
+          <SubdomainForm suggestedSubdomain={suggestedSubdomain} />
         </div>
       </div>
     </div>
