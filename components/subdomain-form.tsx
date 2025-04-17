@@ -26,7 +26,14 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const [isPreview, setIsPreview] = useState(false)
   const router = useRouter()
+
+  // Check if we're in a preview environment
+  useEffect(() => {
+    const hostname = window.location.hostname
+    setIsPreview(hostname.includes("vercel.app") || hostname.includes(".preview.app"))
+  }, [])
 
   // Set the suggested subdomain when the component mounts or when it changes
   useEffect(() => {
@@ -43,9 +50,15 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
     try {
       const result = await createSubdomain(subdomain, icon)
       if (result.success) {
-        // Redirect to the new subdomain
-        const protocol = window.location.protocol
-        router.push(`${protocol}//${subdomain}.${domain}`)
+        if (isPreview) {
+          // In preview environments, we can't redirect to a custom subdomain
+          // Instead, redirect to the subdomain page within the same preview deployment
+          router.push(`/subdomain/${subdomain}`)
+        } else {
+          // In production or local, redirect to the actual subdomain
+          const protocol = window.location.protocol
+          router.push(`${protocol}//${subdomain}.${domain}`)
+        }
       } else {
         setError(result.error || "Something went wrong")
       }
@@ -80,6 +93,11 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
             .{domain}
           </span>
         </div>
+        {isPreview && (
+          <p className="text-xs text-amber-600">
+            Note: In preview mode, subdomains will be simulated within this preview deployment.
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">

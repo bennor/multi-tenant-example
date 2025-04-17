@@ -11,10 +11,43 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check if we're on a subdomain
+  // Check if we're in a preview environment (Vercel preview deployment)
+  const isPreview = host.includes("vercel.app") || host.includes(".preview.app")
+
+  // Extract hostname without port
   const hostname = host.split(":")[0]
   const rootDomain = domain.split(":")[0]
 
+  // Handle preview environments differently
+  if (isPreview) {
+    // In preview, subdomains are indicated with a pattern like: tenant---branch-name.vercel.app
+    // or tenant.project-name.preview.app
+    const hostnameParts = hostname.split(".")
+    const previewParts = hostnameParts[0].split("---")
+
+    // If there's a tenant prefix in the preview URL
+    if (previewParts.length > 1) {
+      const subdomain = previewParts[0]
+
+      // Block access to admin page from subdomains
+      if (pathname.startsWith("/admin")) {
+        return NextResponse.redirect(new URL("/", request.url))
+      }
+
+      // For the root path on a subdomain, rewrite to the subdomain page
+      if (pathname === "/") {
+        return NextResponse.rewrite(new URL(`/subdomain/${subdomain}`, request.url))
+      }
+
+      // For all other paths on a subdomain, just continue
+      return NextResponse.next()
+    }
+
+    // If no tenant prefix, treat as the root domain
+    return NextResponse.next()
+  }
+
+  // Standard environment handling (production or local)
   const isSubdomain =
     hostname !== rootDomain &&
     hostname !== `www.${rootDomain}` &&
@@ -36,7 +69,6 @@ export async function middleware(request: NextRequest) {
     }
 
     // For the root path on a subdomain, rewrite to the subdomain page
-    // This is the key fix - we're only rewriting, not redirecting
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/subdomain/${subdomain}`, request.url))
     }
