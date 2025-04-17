@@ -1,7 +1,7 @@
 import { getSubdomainData } from "@/actions/subdomain"
 import { notFound } from "next/navigation"
+import Link from "next/link"
 import type { Metadata } from "next"
-import { SubdomainContent } from "@/components/subdomain-content"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
@@ -28,28 +28,36 @@ export async function generateMetadata({
   }
 }
 
-// This function is cached and only runs once per subdomain per deployment
-async function getCachedSubdomainData(subdomain: string) {
-  "use cache"
-  const data = await getSubdomainData(subdomain)
-  return data
-}
-
 export default async function SubdomainPage({
   params,
 }: {
   params: { subdomain: string }
 }) {
   const { subdomain } = params
+  const data = await getSubdomainData(subdomain)
 
-  // Get the data using the cached function
-  const data = await getCachedSubdomainData(subdomain)
-
-  // This check runs on every request
   if (!data) {
     notFound()
   }
 
-  // Render the content
-  return <SubdomainContent subdomain={subdomain} emoji={data.emoji} />
+  return (
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50 to-white p-4">
+      {/* Subtle link back to root domain */}
+      <div className="absolute top-4 right-4">
+        <Link href={`https://${domain}`} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          {domain}
+        </Link>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-9xl mb-6">{data.emoji}</div>
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+            Welcome to {subdomain}.{domain}
+          </h1>
+          <p className="mt-3 text-lg text-gray-600">This is your custom subdomain page</p>
+        </div>
+      </div>
+    </div>
+  )
 }

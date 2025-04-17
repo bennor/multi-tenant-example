@@ -1,7 +1,6 @@
 "use server"
 
 import { kv } from "@vercel/kv"
-import { cache } from "react"
 
 type SubdomainData = {
   emoji: string
@@ -59,8 +58,7 @@ export async function createSubdomain(subdomain: string, emoji: string) {
   }
 }
 
-// Use React's cache function to memoize the getSubdomainData function
-export const getSubdomainData = cache(async (subdomain: string) => {
+export async function getSubdomainData(subdomain: string) {
   try {
     const data = await kv.get<SubdomainData>(`subdomain:${subdomain}`)
     return data
@@ -68,4 +66,4 @@ export const getSubdomainData = cache(async (subdomain: string) => {
     console.error("Error getting subdomain data:", error)
     return null
   }
-})
+}
