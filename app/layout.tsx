@@ -11,6 +11,10 @@ const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
 export const metadata: Metadata = {
   title: domain,
   description: `Create your own subdomain on ${domain}`,
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
     generator: 'v0.dev'
 }
 

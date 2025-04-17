@@ -1,0 +1,13 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#3B82F6"/>
+  
+  <!-- Subdomain visualization - connected nodes -->
+  <circle cx="16" cy="10" r="4" fill="white"/>
+  <circle cx="10" cy="20" r="3" fill="white"/>
+  <circle cx="22" cy="20" r="3" fill="white"/>
+  
+  <!-- Connection lines -->
+  <path d="M16 14L10 17" stroke="white" stroke-width="1.5"/>
+  <path d="M16 14L22 17" stroke="white" stroke-width="1.5"/>
+</svg>

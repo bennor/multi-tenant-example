@@ -43,7 +43,7 @@ export default function NotFound() {
         <p className="mt-3 text-lg text-gray-600">This subdomain hasn't been created yet.</p>
         <div className="mt-6">
           <Link
-            href={subdomain ? `/?subdomain=${subdomain}` : "/"}
+            href={subdomain ? `https://${domain}?subdomain=${subdomain}` : `https://${domain}`}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             {subdomain ? `Create ${subdomain}` : `Go to ${domain}`}
