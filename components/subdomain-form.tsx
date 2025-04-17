@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createSubdomain } from "@/actions/subdomain"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,11 +22,18 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+  const emojiInputRef = useRef<HTMLInputElement>(null)
 
   // Set the suggested subdomain when the component mounts or when it changes
   useEffect(() => {
     if (suggestedSubdomain) {
       setSubdomain(suggestedSubdomain)
+
+      // Focus on the emoji input if we have a suggested subdomain
+      // Small timeout to ensure the DOM is fully rendered
+      setTimeout(() => {
+        emojiInputRef.current?.focus()
+      }, 100)
     }
   }, [suggestedSubdomain])
 
@@ -76,6 +83,7 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
         <Label htmlFor="emoji">Emoji</Label>
         <Input
           id="emoji"
+          ref={emojiInputRef}
           placeholder="Enter an emoji"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
