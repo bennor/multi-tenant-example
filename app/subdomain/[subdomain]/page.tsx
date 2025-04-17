@@ -28,19 +28,28 @@ export async function generateMetadata({
   }
 }
 
+// This function is cached and only runs once per subdomain per deployment
+async function getCachedSubdomainData(subdomain: string) {
+  "use cache"
+  const data = await getSubdomainData(subdomain)
+  return data
+}
+
 export default async function SubdomainPage({
   params,
 }: {
   params: { subdomain: string }
 }) {
   const { subdomain } = params
-  const data = await getSubdomainData(subdomain)
 
-  // This check should run on every request, not be cached
+  // Get the data using the cached function
+  const data = await getCachedSubdomainData(subdomain)
+
+  // This check runs on every request
   if (!data) {
     notFound()
   }
 
-  // The actual content is in a separate component that gets cached
+  // Render the content
   return <SubdomainContent subdomain={subdomain} emoji={data.emoji} />
 }
