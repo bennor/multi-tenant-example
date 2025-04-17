@@ -20,6 +20,7 @@ export async function middleware(request: NextRequest) {
     hostname !== `www.${rootDomain}` &&
     (hostname.endsWith(`.${rootDomain}`) || hostname.includes(".localhost"))
 
+  // Handle subdomain requests
   if (isSubdomain) {
     // Extract subdomain name
     let subdomain
@@ -29,20 +30,22 @@ export async function middleware(request: NextRequest) {
       subdomain = hostname.replace(`.${rootDomain}`, "")
     }
 
-    // If on a subdomain and trying to access landing page or admin, redirect to subdomain root
-    if (pathname === "/" || pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL(`/`, request.url))
+    // Block access to admin page from subdomains
+    if (pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/", request.url))
     }
 
-    // If we're on a subdomain, rewrite to the subdomain page
+    // For the root path on a subdomain, rewrite to the subdomain page
+    // This is the key fix - we're only rewriting, not redirecting
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/subdomain/${subdomain}`, request.url))
     }
-  } else {
-    // On root domain, allow access to landing page and admin
+
+    // For all other paths on a subdomain, just continue
     return NextResponse.next()
   }
 
+  // On the root domain, allow normal access
   return NextResponse.next()
 }
 
