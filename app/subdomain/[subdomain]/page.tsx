@@ -1,10 +1,9 @@
+"use cache"
+
 import { getSubdomainData } from "@/actions/subdomain"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
-
-// Add the "use cache" directive to ensure the page is only generated once per deployment
-;("use cache")
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
