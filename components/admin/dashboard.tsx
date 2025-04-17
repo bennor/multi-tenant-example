@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getAllSubdomains, deleteSubdomain } from "@/actions/admin"
+import { logoutAdmin } from "@/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -12,8 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Trash2 } from "lucide-react"
+import { Trash2, RefreshCw, LogOut } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
@@ -29,6 +31,8 @@ export function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const router = useRouter()
 
   const loadTenants = async () => {
     setIsLoading(true)
@@ -61,23 +65,45 @@ export function AdminDashboard() {
     }
   }
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logoutAdmin()
+      router.refresh()
+    } catch (error) {
+      console.error("Failed to logout:", error)
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
-    <div className="space-y-6 relative">
-      {/* Subtle link back to root domain */}
-      <div className="absolute top-0 right-0">
-        <Link href={`https://${domain}`} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
-          {domain}
-        </Link>
-      </div>
-
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 relative p-4 md:p-8">
+      {/* Header with navigation links */}
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Subdomain Management</h1>
-        <Button onClick={loadTenants} variant="outline" disabled={isLoading}>
-          {isLoading ? "Loading..." : "Refresh"}
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={loadTenants}
+            variant="outline"
+            disabled={isLoading}
+            size="sm"
+            className="flex items-center gap-1"
+          >
+            <RefreshCw className="h-4 w-4" />
+            {isLoading ? "Loading..." : "Refresh"}
+          </Button>
+          <Link href={`https://${domain}`} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            {domain}
+          </Link>
+          <Button variant="ghost" size="sm" onClick={handleLogout} disabled={isLoggingOut} className="text-gray-500">
+            <LogOut className="h-4 w-4 mr-1" />
+            Logout
+          </Button>
+        </div>
       </div>
 
-      {isLoading ? (
+      {isLoading && tenants.length === 0 ? (
         <div className="text-center py-8">Loading subdomains...</div>
       ) : tenants.length === 0 ? (
         <Card>
