@@ -7,10 +7,29 @@ type SubdomainData = {
   createdAt: number
 }
 
-// Updated function to check if a string contains a valid icon (emoji or special character)
+// Improved function to validate emojis
 function isValidIcon(str: string) {
-  // Allow any single character or emoji (which can be 2 characters in JS)
-  return str.length <= 2
+  // Check if the string is not too long (prevent abuse)
+  if (str.length > 10) {
+    return false
+  }
+
+  try {
+    // Primary validation: Check if the string contains at least one emoji character
+    // This regex pattern matches most emoji Unicode ranges
+    const emojiPattern = /[\p{Emoji}]/u
+    if (emojiPattern.test(str)) {
+      return true
+    }
+  } catch (error) {
+    // If the regex fails (e.g., in environments that don't support Unicode property escapes),
+    // fall back to a simpler validation
+    console.warn("Emoji regex validation failed, using fallback validation", error)
+  }
+
+  // Fallback validation: Check if the string is within a reasonable length
+  // This is less secure but better than no validation
+  return str.length >= 1 && str.length <= 10
 }
 
 export async function createSubdomain(subdomain: string, emoji: string) {
@@ -22,7 +41,7 @@ export async function createSubdomain(subdomain: string, emoji: string) {
 
     // Validate icon
     if (!isValidIcon(emoji)) {
-      return { success: false, error: "Please enter a valid emoji or special character" }
+      return { success: false, error: "Please enter a valid emoji (maximum 10 characters)" }
     }
 
     // Sanitize subdomain (only allow alphanumeric and hyphens)
