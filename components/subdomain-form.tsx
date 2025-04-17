@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Smile } from "lucide-react"
-import { EmojiPicker } from "./emoji-picker"
 import { Card } from "@/components/ui/card"
+import { EmojiPicker, EmojiPickerContent, EmojiPickerSearch, EmojiPickerFooter } from "@/components/ui/emoji-picker"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
@@ -56,7 +56,7 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
     }
   }
 
-  const handleEmojiSelect = (emoji: string) => {
+  const handleEmojiSelect = ({ emoji }: { emoji: string }) => {
     setIcon(emoji)
     setIsPickerOpen(false)
   }
@@ -91,7 +91,7 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
           {/* Icon display and picker button */}
           <div className="flex items-center gap-2">
             <Card className="flex-1 flex items-center justify-between p-2 border border-input">
-              <div className="min-w-[40px] min-h-[40px] flex items-center pl-1.5 select-none">
+              <div className="min-w-[40px] min-h-[40px] flex items-center pl-[14px] select-none">
                 {icon ? (
                   <span className="text-3xl">{icon}</span>
                 ) : (
@@ -111,8 +111,12 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
                     Select Icon
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[350px] p-0" align="end" sideOffset={5}>
-                  <EmojiPicker onEmojiSelect={handleEmojiSelect} />
+                <PopoverContent className="p-0 w-[256px]" align="end" sideOffset={5}>
+                  <EmojiPicker className="h-[300px] w-[256px]" onEmojiSelect={handleEmojiSelect}>
+                    <EmojiPickerSearch />
+                    <EmojiPickerContent />
+                    <EmojiPickerFooter />
+                  </EmojiPicker>
                 </PopoverContent>
               </Popover>
             </Card>
