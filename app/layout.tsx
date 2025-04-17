@@ -5,9 +5,12 @@ import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
+// Get the domain from environment variable or use a default
+const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
+
 export const metadata: Metadata = {
-  title: "Multi-Tenant App",
-  description: "A simple multi-tenant app with subdomain support",
+  title: domain,
+  description: `Create your own subdomain on ${domain}`,
     generator: 'v0.dev'
 }
 

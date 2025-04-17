@@ -1,7 +1,13 @@
 import Link from "next/link"
+import type { Metadata } from "next"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
+
+export const metadata: Metadata = {
+  title: domain,
+  description: `Page not found on ${domain}`,
+}
 
 export default function NotFound() {
   return (

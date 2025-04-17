@@ -1,9 +1,32 @@
 import { getSubdomainData } from "@/actions/subdomain"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import type { Metadata } from "next"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
+
+// Generate metadata for the subdomain page
+export async function generateMetadata({
+  params,
+}: {
+  params: { subdomain: string }
+}): Promise<Metadata> {
+  const { subdomain } = params
+  const data = await getSubdomainData(subdomain)
+
+  // If subdomain doesn't exist, return default metadata
+  if (!data) {
+    return {
+      title: domain,
+    }
+  }
+
+  return {
+    title: `${subdomain}.${domain}`,
+    description: `Subdomain page for ${subdomain}.${domain}`,
+  }
+}
 
 export default async function SubdomainPage({
   params,
