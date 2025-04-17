@@ -69,10 +69,10 @@ export function AdminDashboard() {
     setIsLoggingOut(true)
     try {
       await logoutAdmin()
-      router.refresh()
+      // Redirect to the landing page after logout
+      router.push("/")
     } catch (error) {
       console.error("Failed to logout:", error)
-    } finally {
       setIsLoggingOut(false)
     }
   }
@@ -98,7 +98,7 @@ export function AdminDashboard() {
           </Link>
           <Button variant="ghost" size="sm" onClick={handleLogout} disabled={isLoggingOut} className="text-gray-500">
             <LogOut className="h-4 w-4 mr-1" />
-            Logout
+            {isLoggingOut ? "Logging out..." : "Logout"}
           </Button>
         </div>
       </div>
