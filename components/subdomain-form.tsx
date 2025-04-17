@@ -91,8 +91,12 @@ export function SubdomainForm({ suggestedSubdomain }: SubdomainFormProps) {
           {/* Icon display and picker button */}
           <div className="flex items-center gap-2">
             <Card className="flex-1 flex items-center justify-between p-2 border border-input">
-              <div className="text-3xl min-w-[40px] min-h-[40px] flex items-center justify-center">
-                {icon || <span className="text-gray-400 text-sm">No icon selected</span>}
+              <div className="min-w-[40px] min-h-[40px] flex items-center pl-1.5">
+                {icon ? (
+                  <span className="text-3xl">{icon}</span>
+                ) : (
+                  <span className="text-gray-400 text-sm font-normal">No icon selected</span>
+                )}
               </div>
               <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
                 <PopoverTrigger asChild>
