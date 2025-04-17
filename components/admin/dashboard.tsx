@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Trash2 } from "lucide-react"
+import Link from "next/link"
 
 // Get the domain from environment variable or use a default
 const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000"
@@ -61,7 +62,14 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Subtle link back to root domain */}
+      <div className="absolute top-0 right-0">
+        <Link href={`https://${domain}`} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          {domain}
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Subdomain Management</h1>
         <Button onClick={loadTenants} variant="outline" disabled={isLoading}>

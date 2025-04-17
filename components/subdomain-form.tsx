@@ -63,7 +63,7 @@ export function SubdomainForm() {
         <Label htmlFor="emoji">Emoji</Label>
         <Input
           id="emoji"
-          placeholder="🚀"
+          placeholder="Enter an emoji"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
           required
