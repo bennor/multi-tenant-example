@@ -39,7 +39,7 @@ function EmojiPickerSearch({ className, ...props }: React.ComponentProps<typeof 
 
 function EmojiPickerRow({ children, ...props }: EmojiPickerListRowProps) {
   return (
-    <div {...props} className="scroll-my-1 px-0.5 flex justify-between" data-slot="emoji-picker-row">
+    <div {...props} className="scroll-my-1 px-0.5 flex justify-start gap-0.5" data-slot="emoji-picker-row">
       {children}
     </div>
   )
